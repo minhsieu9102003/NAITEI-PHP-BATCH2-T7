@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Http\Requests\ProductRequest;
 use App\Models\ProductCategory;
+use App\Models\UserReview;
+use App\Models\ViewedProduct;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -15,10 +18,41 @@ class ProductController extends Controller
         return view('admin.products.index', compact('products'));
     }
 
+    public function show(Product $product)
+    {
+        if (Auth::check()) {
+            $userId = Auth::id();
+            $alreadyViewed = ViewedProduct::where('user_id', $userId)
+                ->where('product_id', $product->id)
+                ->where('viewed_at', '>=', now()->subDay()) // Avoid duplicating views within 24 hours
+                ->exists();
+
+            if (!$alreadyViewed) {
+                ViewedProduct::create([
+                    'user_id' => $userId,
+                    'product_id' => $product->id,
+                    'viewed_at' => now(),
+                ]);
+            }
+        }
+        $userReviews = UserReview::withWhereHas('orderItem', function ($query) use ($product){
+            $query->where('product_id', $product->id);
+        })->get();
+        $userReviewCount = $userReviews->count();
+        $userReviewAverage = $userReviews->avg('rating');
+        
+        return view('products.show', [
+            'product' => $product,
+            'userReviews' => $userReviews,
+            'userReviewCount' => $userReviewCount,
+            'userReviewAverage' => $userReviewAverage,
+        ]);
+    }
+
     public function create()
     {
         $categories = ProductCategory::all();
-        return view('admin.products.create');
+        return view('admin.products.create', compact('categories'));
     }
 
     public function store(Request $request)
