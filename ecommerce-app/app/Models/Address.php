@@ -10,6 +10,7 @@ class Address extends Model
 {
     use HasFactory;
 
+
     public $incrementing = false;
 
     protected $keyType = 'string';
@@ -20,4 +21,9 @@ class Address extends Model
             $address->id = Str::uuid();
         });
     }
+
+    protected $casts = [
+        'id' => 'string'
+    ];
+
 }

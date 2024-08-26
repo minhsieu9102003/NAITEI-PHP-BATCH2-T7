@@ -113,7 +113,11 @@
     @auth
         <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
             <h2 class="text-2xl font-bold text-gray-800">Leave Your Feedback</h2>
+<<<<<<< HEAD
             <form action="/" method="POST">
+=======
+            <form action="{{ route('review.store', ["order_item_id" => $id]) }}" method="POST">
+>>>>>>> upstream/master
                 @csrf
                 @method('POST')
                 <div class="mt-4">

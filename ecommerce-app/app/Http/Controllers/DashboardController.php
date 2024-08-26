@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
 use Illuminate\Support\Facades\Auth;
 use App\Models\ViewedProduct;
+
 class DashboardController extends Controller
 {
     public function index(Request $request)
@@ -59,6 +61,7 @@ class DashboardController extends Controller
             //     $query->orderBy('rating', 'desc');
             //     break;
         }
+
         $recentlyViewedProducts = [];
         if (Auth::check()) {
             $recentlyViewedProducts = ViewedProduct::where('user_id', Auth::id())
@@ -71,6 +74,7 @@ class DashboardController extends Controller
         return view('dashboard', [
             'products' => $products,
             'recentlyViewedProducts' => $recentlyViewedProducts,
+
         ]);
     }
 
@@ -89,7 +93,9 @@ class DashboardController extends Controller
         $products = Product::all();
         return view('dashboard', [
             'products' => $products,
+
             'recentlyViewedProducts' => [],
+
         ]);
     }
 }

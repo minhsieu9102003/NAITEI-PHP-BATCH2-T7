@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 use Illuminate\Support\Str;
+
 
 class Product extends Model
 {
@@ -22,6 +24,7 @@ class Product extends Model
         'price',
     ];
 
+
     protected $keyType = 'string';
 
     public static function booted(): void
@@ -31,8 +34,15 @@ class Product extends Model
         });
     }
 
+ 
+
+    protected $casts = [
+        'id' => 'string'
+    ];
+
     public function category(): BelongsTo
     {
+
         return $this->belongsTo(ProductCategory::class, 'product_category_id');
     }
 }

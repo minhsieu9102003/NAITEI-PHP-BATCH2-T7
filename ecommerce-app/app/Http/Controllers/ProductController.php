@@ -7,8 +7,11 @@ use App\Models\Product;
 use App\Http\Requests\ProductRequest;
 use App\Models\ProductCategory;
 use App\Models\UserReview;
+<<<<<<< HEAD
 use Illuminate\Support\Facades\Auth;
 use App\Models\ViewedProduct;
+=======
+>>>>>>> upstream/master
 
 class ProductController extends Controller
 {
@@ -20,6 +23,7 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
+<<<<<<< HEAD
         if (Auth::check()) {
             $userId = Auth::id();
             $alreadyViewed = ViewedProduct::where('user_id', $userId)
@@ -34,11 +38,16 @@ class ProductController extends Controller
                     'viewed_at' => now(),
                 ]);
             }}
+=======
+>>>>>>> upstream/master
         $userReviews = UserReview::all();
         return view('products.show', [
             'product' => $product,
             'userReviews' => $userReviews,
+<<<<<<< HEAD
             
+=======
+>>>>>>> upstream/master
         ]);
     }
 
