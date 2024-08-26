@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class ProductCategory extends Model
 {
@@ -12,9 +13,9 @@ class ProductCategory extends Model
 
     protected $table = 'product_categories';
 
-    protected $casts = [
-        'id' => 'string'
-    ];
+    public $incrementing = false;
+
+    protected $keyType = 'string';
 
     protected $fillable = [
         'name',
@@ -24,8 +25,25 @@ class ProductCategory extends Model
         'deleted_at',
     ];
 
+    public static function booted(): void
+    {
+        static::creating(function (ProductCategory $productCategory) {
+            $productCategory->id = Str::uuid();
+        });
+    }
+
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
     }
+    public function parentCategory()
+{
+    return $this->belongsTo(ProductCategory::class, 'parent_category_id');
+}
+
+public function childCategories()
+{
+    return $this->hasMany(ProductCategory::class, 'parent_category_id');
+}
+
 }

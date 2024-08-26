@@ -13,7 +13,12 @@ use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory;
+    use Notifiable;
+
+    public $incrementing = false;
+
+    protected $keyType = 'string';
 
     /**
      * The attributes that are mass assignable.
@@ -34,10 +39,6 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected $casts = [
-        'id' => 'string'
-    ];
-
     /**
      * Get the attributes that should be cast.
      *
@@ -46,6 +47,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'id' => 'string',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
@@ -56,15 +58,20 @@ class User extends Authenticatable
         return $this->hasMany(UserAddress::class);
     }
 
-    public function userPayments(): HasMany
+    // public function userPayments(): HasMany
+    // {
+    //     return $this->hasMany(UserPayment::class);
+    // }
+
+    public function userReview(): HasMany
     {
-        return $this->hasMany(UserPayment::class);
+        return $this->hasMany(UserReview::class);
     }
 
     protected function fullName(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $this->attributes['first_name'] . ' ' . $this->attributes['last_name'],
+            get: fn ($value) => $this->attributes['first_name'].' '.$this->attributes['last_name'],
         );
     }
 
@@ -73,5 +80,12 @@ class User extends Authenticatable
         return Attribute::make(
             set: fn ($value) => Str::slug($value),
         );
+    }
+
+    public static function booted(): void
+    {
+        static::creating(function (User $user) {
+            $user->id = Str::uuid();
+        });
     }
 }

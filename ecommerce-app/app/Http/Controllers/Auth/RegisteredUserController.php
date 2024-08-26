@@ -30,7 +30,7 @@ class RegisteredUserController extends Controller
     public function store(RegisterRequest $request): RedirectResponse
     {
         $request->authorize();
-        $imageUrl = $this->storeImage($request);
+        // $imageUrl = $this->storeImage($request);
 
         $user = new User();
         $user->id = Str::uuid();
@@ -41,7 +41,7 @@ class RegisteredUserController extends Controller
         $user->password = Hash::make($request->password);
         $user->telephone = $request->telephone;
         $user->is_admin = false;
-        $user->photo = $imageUrl;
+        // $user->photo = $imageUrl;
         $user->save();
 
         event(new Registered($user));
@@ -51,9 +51,9 @@ class RegisteredUserController extends Controller
         return redirect(route('dashboard.index', absolute: false));
     }
 
-    protected function storeImage(RegisterRequest $request)
-    {
-        $path = $request->file('photo')->store('public/profile');
-        return substr($path, strlen('public/'));
-    }
+    // protected function storeImage(RegisterRequest $request)
+    // {
+    //     $path = $request->file('photo')->store('public/profile');
+    //     return substr($path, strlen('public/'));
+    // }
 }

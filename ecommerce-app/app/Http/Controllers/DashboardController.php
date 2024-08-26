@@ -6,13 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Auth;
+use App\Models\ViewedProduct;
+use App\Models\ProductCategory;
 class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $products = Product::all();
-
+        $query = Product::with('category');
+        $categories = ProductCategory::all();
+        $products = Product::with('userReviews')
+        ->withAvg('userReviews', 'rating')
+        ->withCount('userReviews');
         $sortAlphabet = $request->input('sort-alphabet');
         $sortPrice = $request->input('sort-price');
         $sortRating = $request->input('sort-rating');
@@ -28,7 +33,8 @@ class DashboardController extends Controller
 
         // Filter by category
         if ($filterCategory) {
-            $products = DB::table('products')->where('product_category_id', $filterCategory)->get();
+            $query->where('product_category_id', $filterCategory);
+            $products = $products->where('product_category_id', $filterCategory);
         }
 
         if ($search)
@@ -58,9 +64,20 @@ class DashboardController extends Controller
             //     $query->orderBy('rating', 'desc');
             //     break;
         }
+        $products = $query->get();
+        $recentlyViewedProducts = collect();
+        if (Auth::check()) {
+            $recentlyViewedProducts = ViewedProduct::where('user_id', Auth::id())
+                ->with('product')
+                ->orderBy('viewed_at', 'desc')
+                ->take(5)
+                ->get();
+        }
 
         return view('dashboard', [
             'products' => $products,
+            'categories' => $categories,
+            'recentlyViewedProducts' => $recentlyViewedProducts,
         ]);
     }
 
@@ -79,6 +96,7 @@ class DashboardController extends Controller
         $products = Product::all();
         return view('dashboard', [
             'products' => $products,
+            'recentlyViewedProducts' => [],
         ]);
     }
 }

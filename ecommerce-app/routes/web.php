@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserReviewController;
+use App\Http\Middleware\CheckOwner;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
@@ -62,8 +64,17 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::post('/products', [CategoryController::class, 'store'])->name('products.store');
     Route::get('/products/{product}/edit', [CategoryController::class, 'edit'])->name('products.edit');
     Route::put('/products/{product}', [CategoryController::class, 'update'])->name('products.update');
-    Route::delete('/products/{product}', [CategoryController::class, 'destroy'])->name('products.destroy');
-    // Route::resource('products', ProductController::class);   
+    Route::delete('/products/{product}', [CategoryController::class, 'destroy'])->name('products.destroy');  
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/review/create', [UserReviewController::class, 'create'])->name('review.create');
+    Route::post('/review', [UserReviewController::class, 'store'])->name('review.store');
+    Route::middleware([CheckOwner::class])->group(function () {
+        Route::get('review/edit/{id}', [UserReviewController::class, 'edit'])->name('review.edit');
+        Route::put('/review/{id}', [UserReviewController::class, 'update'])->name('review.update');
+        Route::delete('/review/{id}', [UserReviewController::class, 'destroy'])->name('review.destroy');
+    });
 });
 
 Route::get('/products', [CategoryController::class, 'index'])->name('products.index');
