@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class OrderDetail extends Model
+class ShoppingCartItem extends Model
 {
     use HasFactory;
 
@@ -16,8 +16,8 @@ class OrderDetail extends Model
 
     public static function booted(): void
     {
-        static::creating(function (OrderDetail $orderDetail) {
-            $orderDetail->id = Str::uuid();
+        static::creating(function (ShoppingCartItem $shoppingCartItem) {
+            $shoppingCartItem->id = Str::uuid();
         });
     }
 }
