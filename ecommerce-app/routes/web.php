@@ -12,6 +12,8 @@ use App\Http\Controllers\ProductController;
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ViewedProductController;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
@@ -20,6 +22,8 @@ use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 // Rest of the code...
 
 // Simulated feedback data
+
+Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
     
@@ -45,8 +49,7 @@ Route::middleware(['auth', 'admin'])->group(function (){
 
         $categories = ProductCategory::all();
 
-        $products = Product::join('product_categories', 'products.product_category_id', '=', 'product_categories.id')
-            ->get(['products.*', 'product_categories.name AS category']);
+        $products = Product::all();
 
         return view('admin', ['users' => $users, 'categories' => $categories, 'products' => $products]);
     })->name('admin.dashboard');
@@ -64,12 +67,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::post('/products', [CategoryController::class, 'store'])->name('products.store');
     Route::get('/products/{product}/edit', [CategoryController::class, 'edit'])->name('products.edit');
     Route::put('/products/{product}', [CategoryController::class, 'update'])->name('products.update');
-    Route::delete('/products/{product}', [CategoryController::class, 'destroy'])->name('products.destroy');
-    // Route::resource('products', ProductController::class);   
+    Route::delete('/products/{product}', [CategoryController::class, 'destroy'])->name('products.destroy');  
 });
-
-Route::get('/products', [CategoryController::class, 'index'])->name('products.index');
-Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/review/create', [UserReviewController::class, 'create'])->name('review.create');
@@ -81,4 +80,7 @@ Route::middleware(['auth'])->group(function () {
     });
 });
 
-require __DIR__ . '/auth.php';
+Route::get('/products', [CategoryController::class, 'index'])->name('products.index');
+Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
+
+require __DIR__.'/auth.php';

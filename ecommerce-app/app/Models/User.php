@@ -4,17 +4,21 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-use Illuminate\Support\Str;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory;
+    use Notifiable;
+
+    public $incrementing = false;
+
+    protected $keyType = 'string';
 
     /**
      * The attributes that are mass assignable.
@@ -35,10 +39,6 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected $casts = [
-        'id' => 'string'
-    ];
-
     /**
      * Get the attributes that should be cast.
      *
@@ -47,6 +47,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'id' => 'string',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
@@ -57,10 +58,10 @@ class User extends Authenticatable
         return $this->hasMany(UserAddress::class);
     }
 
-    public function userPayments(): HasMany
-    {
-        return $this->hasMany(UserPayment::class);
-    }
+    // public function userPayments(): HasMany
+    // {
+    //     return $this->hasMany(UserPayment::class);
+    // }
 
     public function userReview(): HasMany
     {
@@ -70,14 +71,21 @@ class User extends Authenticatable
     protected function fullName(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => $this->attributes['first_name'] . ' ' . $this->attributes['last_name'],
+            get: fn ($value) => $this->attributes['first_name'].' '.$this->attributes['last_name'],
         );
     }
 
     protected function username(): Attribute
     {
         return Attribute::make(
-            set: fn($value) => Str::slug($value),
+            set: fn ($value) => Str::slug($value),
         );
+    }
+
+    public static function booted(): void
+    {
+        static::creating(function (User $user) {
+            $user->id = Str::uuid();
+        });
     }
 }

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\UserReview;
-
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+
+use Str;
 
 class UserReviewController extends Controller
 {
@@ -32,6 +34,7 @@ class UserReviewController extends Controller
         $user = auth()->user();
 
         $review = new UserReview();
+        $review->id = Str::uuid();
         $review->user_id = $user->id;
         $review->order_item_id = request()->order_item_id;
         $review->rating = $request->input("rating");

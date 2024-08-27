@@ -87,6 +87,28 @@
             </div>
         </form>
     </div>
+<!-- Recently Viewed Products Section -->
+<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <h2 class="text-2xl font-semibold text-gray-800">Recently Viewed Products</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+        @if($recentlyViewedProducts->isEmpty())
+            <p class="text-gray-500">You have not viewed any products recently.</p>
+        @else
+            @foreach ($recentlyViewedProducts as $viewedProduct)
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <a href="{{ route('products.show', ['product' => $viewedProduct->product->id]) }}">
+                        <img src="{{ $viewedProduct->product->image_url }}" alt="{{ $viewedProduct->product->name }}" class="w-full h-48 object-cover rounded">
+                    </a>
+                    <h3 class="mt-4 text-lg font-semibold">
+                        <a href="{{ route('products.show', ['product' => $viewedProduct->product->id]) }}">{{ $viewedProduct->product->name }}</a>
+                    </h3>
+                    <p class="text-gray-500">{{ $viewedProduct->product->description }}</p>
+                    <p class="text-gray-800 font-bold mt-2">${{ number_format($viewedProduct->product->price, 2) }}</p>
+                </div>
+            @endforeach
+        @endif
+    </div>
+</div>
 
     <!-- Main Content -->
     <div class="flex-grow">
@@ -101,21 +123,26 @@
                             <a href="{{ route('products.show', ['product' => $product->id]) }}">{{ $product->name }}</a>
                         </h3>
                         <p class="text-gray-500">{{ $product->description }}</p>
-                        <p class="text-gray-600 mt-2">Category: {{ $product->product_category_id }}</p>
+                        <p class="text-gray-600 mt-2">Category: {{ $product->category?->name }}</p>
                         <p class="text-gray-800 font-bold mt-2">${{ number_format($product->price, 2) }}</p>
                         <div class="mt-2 flex items-center">
                             <!-- Display stars for the product -->
-                            @for ($i = 0; $i < 4; $i++)
-                                <svg xmlns="http://www.w3.org/2000/svg" width="21.87" height="20.801" class="text-yellow-400 fill-current">
-                                    <path d="m4.178 20.801 6.758-4.91 6.756 4.91-2.58-7.946 6.758-4.91h-8.352L10.936 0 8.354 7.945H0l6.758 4.91-2.58 7.946z"/>
+                            @for ($i = 0; $i < floor($product->user_reviews_avg_rating); $i++)
+                                <svg xmlns="http://www.w3.org/2000/svg" width="21.87" height="20.801"
+                                    class="text-yellow-400 fill-current">
+                                    <path
+                                        d="m4.178 20.801 6.758-4.91 6.756 4.91-2.58-7.946 6.758-4.91h-8.352L10.936 0 8.354 7.945H0l6.758 4.91-2.58 7.946z" />
                                 </svg>
                             @endfor
-                            @for ($i = 4; $i < 5; $i++)
-                                <svg xmlns="http://www.w3.org/2000/svg" width="21.87" height="20.801" class="text-gray-300 fill-current">
-                                    <path d="m4.178 20.801 6.758-4.91 6.756 4.91-2.58-7.946 6.758-4.91h-8.352L10.936 0 8.354 7.945H0l6.758 4.91-2.58 7.946z"/>
+                            @for ($i = $product->user_reviews_avg_rating; $i < 5; $i++)
+                                <svg xmlns="http://www.w3.org/2000/svg" width="21.87" height="20.801"
+                                    class="text-gray-300 fill-current">
+                                    <path
+                                        d="m4.178 20.801 6.758-4.91 6.756 4.91-2.58-7.946 6.758-4.91h-8.352L10.936 0 8.354 7.945H0l6.758 4.91-2.58 7.946z" />
                                 </svg>
                             @endfor
-                            <span class="ml-2 text-gray-600">(0 reviews)</span>
+                            <span class="ml-2 text-gray-600">{{ $product->user_reviews_avg_rating ? number_format($product->user_reviews_avg_rating, 1) : 0 }}</span>
+                            <span class="ml-2 text-gray-600">({{ $product->user_reviews_count }} reviews)</span>
                         </div>
                     </div>
                 @endforeach
@@ -154,6 +181,8 @@
 </body>
 
 </html>
+
+
 
 
 
