@@ -10,16 +10,26 @@ use App\Http\Controllers\ProductController;
 
 // Rest of the code...
 
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\DashboardController;
+use App\Models\User;
 use App\Models\Product;
 use App\Models\ProductCategory;
-use Illuminate\Http\Request;
-use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
+
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
+
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\UserReviewController;
 
 // Rest of the code...
 
 // Simulated feedback data
+
+Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
     
@@ -45,8 +55,7 @@ Route::middleware(['auth', 'admin'])->group(function (){
 
         $categories = ProductCategory::all();
 
-        $products = Product::join('product_categories', 'products.product_category_id', '=', 'product_categories.id')
-            ->get(['products.*', 'product_categories.name AS category']);
+        $products = Product::all();
 
         return view('admin', ['users' => $users, 'categories' => $categories, 'products' => $products]);
     })->name('admin.dashboard');
@@ -81,3 +90,6 @@ Route::get('/products', [CategoryController::class, 'index'])->name('products.in
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
 
 require __DIR__.'/auth.php';
+
+
+
